@@ -6,11 +6,8 @@ import java.sql.SQLException;
 public class Main {
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        // write your code here
-        final var database = args.length == 2 ? args[1] : "carsharing";
-
         Class.forName("org.h2.Driver");
-        final var fileName = "../task/src/carsharing/db/" + database;
+        final var fileName = getDatabasePath(args);
 
         try (var connection = DriverManager.getConnection("jdbc:h2:" + fileName);
              var st = connection.createStatement()) {
@@ -23,5 +20,10 @@ public class Main {
 
         }
 
+    }
+
+    private static String getDatabasePath(String... args) {
+        final var name = args.length == 2 ? args[1] : "carsharing";
+        return "../task/src/carsharing/db/" + name;
     }
 }
