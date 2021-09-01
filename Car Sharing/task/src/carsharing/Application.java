@@ -1,21 +1,25 @@
 package carsharing;
 
+import carsharing.dao.CompanyDao;
+import carsharing.dao.impl.CompanyDaoImpl;
 import carsharing.ui.Menu;
 import carsharing.ui.TextInterface;
 
 public class Application implements TextInterface, Runnable {
-    private final String connectionName;
+    private final CompanyDao companyDao;
 
-    public Application(String connectionName) {
-        this.connectionName = connectionName;
+    public Application(CompanyDaoImpl dao) {
+        companyDao = dao;
     }
 
     @Override
     public void run() {
+        companyDao.createTable();
+
         final var subMenu = Menu.create()
                 .add("Company list", this::list)
                 .add("Create a company", this::create)
-                .set(Menu.Property.EXIT, "back")
+                .set(Menu.Property.EXIT, "Back")
                 .addExit();
 
         final var menu = Menu.create()
@@ -26,10 +30,19 @@ public class Application implements TextInterface, Runnable {
     }
 
     private void create() {
-        println("Create a company");
+        println("Enter the company name:");
+        final var name = scanner.nextLine();
+        companyDao.addCompany(name);
     }
 
     private void list() {
-        println("List of companies");
+
+        var companies = companyDao.getAllCompanies();
+        if (companies.isEmpty()) {
+            println("The company list is empty!");
+        } else {
+            println("Company list:");
+            companies.forEach(c -> println("{0}. {1}", c.getId(), c.getName()));
+        }
     }
 }

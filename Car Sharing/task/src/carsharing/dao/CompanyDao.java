@@ -6,4 +6,8 @@ import java.util.Collection;
 
 public interface CompanyDao {
     Collection<Company> getAllCompanies();
+
+    void addCompany(String name);
+
+    void createTable();
 }
