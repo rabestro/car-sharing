@@ -7,9 +7,9 @@ public class Main {
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         Class.forName("org.h2.Driver");
-        final var fileName = getDatabasePath(args);
+        final var connectionName = getConnectionName(args);
 
-        try (var connection = DriverManager.getConnection("jdbc:h2:" + fileName);
+        try (var connection = DriverManager.getConnection(connectionName);
              var st = connection.createStatement()) {
             connection.setAutoCommit(true);
             st.execute("DROP TABLE IF EXISTS COMPANY");
@@ -19,11 +19,11 @@ public class Main {
             st.executeUpdate(sql);
 
         }
-
+        new Application(connectionName).run();
     }
 
-    private static String getDatabasePath(String... args) {
+    private static String getConnectionName(String... args) {
         final var name = args.length == 2 ? args[1] : "carsharing";
-        return "../task/src/carsharing/db/" + name;
+        return "jdbc:h2:" + "../task/src/carsharing/db/" + name;
     }
 }
