@@ -1,6 +1,7 @@
 package carsharing.dao.impl;
 
 import carsharing.dao.CompanyDao;
+import carsharing.model.Car;
 import carsharing.model.Company;
 
 import java.sql.DriverManager;
@@ -70,6 +71,11 @@ public class CompanyDaoImpl implements CompanyDao {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        return Collections.emptySet();
+    }
+
+    @Override
+    public Collection<Car> getAllCars() {
         return Collections.emptySet();
     }
 

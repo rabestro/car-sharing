@@ -50,17 +50,17 @@ public class Application implements TextInterface, Runnable {
 
     private void company(Company company) {
         Menu.create("'" + company.getName() + "' company:")
-                .add("Car list", this::carList)
-                .add("Create a car", this::createCar)
+                .add("Car list", () -> carList(company))
+                .add("Create a car", () -> createCar(company))
                 .set(Menu.Property.EXIT, "Back")
                 .addExit();
     }
 
-    private void createCar() {
+    private void createCar(Company company) {
 
     }
 
-    private void carList() {
+    private void carList(Company company) {
 
     }
 }
