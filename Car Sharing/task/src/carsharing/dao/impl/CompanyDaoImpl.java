@@ -8,18 +8,26 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 public class CompanyDaoImpl implements CompanyDao {
     private static final String DEFAULT_DB_NAME = "car_sharing";
     private static final String DRIVER = "org.h2.Driver";
     private static final String PATH = "jdbc:h2:./src/carsharing/db/";
     private static final String SQL_COMPANIES = "SELECT * FROM company";
-    private static final String SQL_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS company (" +
-            "id INTEGER AUTO_INCREMENT PRIMARY KEY, " +
-            "name VARCHAR(255) UNIQUE NOT NULL" +
-            ")";
 
-    private static int lastId = 0;
+    private static final String SQL_CREATE_COMPANY_TABLE = "" +
+            "CREATE TABLE IF NOT EXISTS company (" +
+            "id INT AUTO_INCREMENT PRIMARY KEY, " +
+            "name VARCHAR(255) UNIQUE NOT NULL)";
+
+    private static final String SQL_CREATE_CAR_TABLE = "" +
+            "CREATE TABLE IF NOT EXISTS car (" +
+            "id INT AUTO_INCREMENT PRIMARY KEY, " +
+            "name VARCHAR(255) UNIQUE NOT NULL, " +
+            "company_id INT NOT NULL," +
+            " constraint CAR_COMPANY_ID_FK " +
+            " foreign key (COMPANY_ID) references COMPANY (ID))";
 
     private final String connectionName;
 
@@ -38,7 +46,8 @@ public class CompanyDaoImpl implements CompanyDao {
              var statement = connection.createStatement()) {
 
             connection.setAutoCommit(true);
-            statement.executeUpdate(SQL_CREATE_TABLE);
+            statement.execute(SQL_CREATE_COMPANY_TABLE);
+            statement.execute(SQL_CREATE_CAR_TABLE);
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -74,5 +83,23 @@ public class CompanyDaoImpl implements CompanyDao {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+    }
+
+    @Override
+    public Optional<Company> getCompany(int id) {
+        try (var connection = DriverManager.getConnection(connectionName);
+             var statement = connection.createStatement()) {
+            final var sql = "SELECT * FROM COMPANY WHERE id=" + id;
+            var resultSet = statement.executeQuery(sql);
+            if (resultSet.next()) {
+                var company = new Company();
+                company.setId(resultSet.getInt("ID"));
+                company.setName(resultSet.getString("NAME"));
+                return Optional.of(company);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return Optional.empty();
     }
 }
