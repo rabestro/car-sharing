@@ -7,7 +7,6 @@ buildscript {
 subprojects {
     apply plugin: 'application'
     apply plugin: 'java'
-    apply plugin: 'groovy'
 
     sourceCompatibility = 11
 
@@ -17,13 +16,8 @@ subprojects {
     }
 
     dependencies {
-        compileOnly 'org.projectlombok:lombok:1.18.20'
-        annotationProcessor 'org.projectlombok:lombok:1.18.20'
-
         implementation group: 'com.h2database', name: 'h2', version: '1.4.200'
         testImplementation 'com.github.hyperskill:hs-test:release-SNAPSHOT'
-        testImplementation 'org.codehaus.groovy:groovy-all:3.0.8'
-        testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
     }
 
     configurations.all {

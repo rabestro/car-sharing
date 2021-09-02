@@ -1,5 +1,6 @@
 package carsharing;
 
+import carsharing.component.CompanyList;
 import carsharing.dao.CompanyDao;
 import carsharing.dao.impl.CompanyDaoImpl;
 import carsharing.model.Company;
@@ -7,18 +8,18 @@ import carsharing.ui.Menu;
 import carsharing.ui.TextInterface;
 
 public class Application implements TextInterface, Runnable {
-    private final CompanyDao companyDao;
+    private final CompanyDao dao;
 
     public Application(CompanyDaoImpl dao) {
-        companyDao = dao;
+        this.dao = dao;
     }
 
     @Override
     public void run() {
-        companyDao.createTable();
+        dao.createTable();
 
         final var subMenu = Menu.create()
-                .add("Company list", this::list)
+                .add("Company list", new CompanyList(dao))
                 .add("Create a company", this::create)
                 .set(Menu.Property.EXIT, "Back")
                 .addExit();
@@ -33,34 +34,8 @@ public class Application implements TextInterface, Runnable {
     private void create() {
         println("Enter the company name:");
         final var name = scanner.nextLine();
-        companyDao.addCompany(name);
+        dao.addCompany(name);
     }
 
-    private void list() {
-        var companies = companyDao.getAllCompanies();
-        if (companies.isEmpty()) {
-            println("The company list is empty!");
-        } else {
-            println("Company list:");
-            companies.forEach(c -> println("{0}. {1}", c.getId(), c.getName()));
-            var id = Integer.parseInt(scanner.nextLine());
-            companyDao.getCompany(id).ifPresent(this::company);
-        }
-    }
 
-    private void company(Company company) {
-        Menu.create("'" + company.getName() + "' company:")
-                .add("Car list", () -> carList(company))
-                .add("Create a car", () -> createCar(company))
-                .set(Menu.Property.EXIT, "Back")
-                .addExit();
-    }
-
-    private void createCar(Company company) {
-
-    }
-
-    private void carList(Company company) {
-
-    }
 }

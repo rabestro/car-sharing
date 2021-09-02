@@ -13,7 +13,11 @@ public interface CompanyDao {
 
     void addCompany(String name);
 
+    void addCar(String name, Company company);
+
     void createTable();
 
     Optional<Company> getCompany(int id);
+
+    Collection<Car> getCarsByCompany(Company company);
 }

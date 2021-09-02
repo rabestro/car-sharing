@@ -11,11 +11,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
+import static java.lang.System.Logger.Level.TRACE;
+
 public class CompanyDaoImpl implements CompanyDao {
+    System.Logger LOGGER = System.getLogger("");
+
     private static final String DEFAULT_DB_NAME = "car_sharing";
     private static final String DRIVER = "org.h2.Driver";
     private static final String PATH = "jdbc:h2:./src/carsharing/db/";
     private static final String SQL_COMPANIES = "SELECT * FROM company";
+    private static final String SQL_CARS = "SELECT * FROM car";
 
     private static final String SQL_CREATE_COMPANY_TABLE = "" +
             "CREATE TABLE IF NOT EXISTS company (" +
@@ -76,6 +81,40 @@ public class CompanyDaoImpl implements CompanyDao {
 
     @Override
     public Collection<Car> getAllCars() {
+        try (var connection = DriverManager.getConnection(connectionName);
+             var statement = connection.createStatement();
+             var resultSet = statement.executeQuery(SQL_CARS)) {
+            var cars = new ArrayList<Car>();
+            while (resultSet.next()) {
+                var car = new Car();
+                car.setId(resultSet.getInt("ID"));
+                car.setName(resultSet.getString("NAME"));
+                cars.add(car);
+            }
+            return Collections.unmodifiableCollection(cars);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return Collections.emptySet();
+    }
+
+    @Override
+    public Collection<Car> getCarsByCompany(Company company) {
+        try (var connection = DriverManager.getConnection(connectionName);
+             var statement = connection.createStatement()) {
+            var sql = "SELECT * FROM CAR WHERE company_id=" + company.getId();
+            var resultSet = statement.executeQuery(sql);
+            var cars = new ArrayList<Car>();
+            if (resultSet.next()) {
+                var car = new Car();
+                car.setId(resultSet.getInt("ID"));
+                car.setName(resultSet.getString("NAME"));
+                cars.add(car);
+            }
+            return cars;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
         return Collections.emptySet();
     }
 
@@ -92,10 +131,24 @@ public class CompanyDaoImpl implements CompanyDao {
     }
 
     @Override
+    public void addCar(String name, Company company) {
+        try (var connection = DriverManager.getConnection(connectionName);
+             var statement = connection.createStatement()) {
+            connection.setAutoCommit(true);
+            final var sql = "INSERT INTO CAR (name, company_id) VALUES ('" + name + "', " + company.getId() + ")";
+            statement.executeUpdate(sql);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    @Override
     public Optional<Company> getCompany(int id) {
+        LOGGER.log(TRACE, "searching company id={0}", id);
         try (var connection = DriverManager.getConnection(connectionName);
              var statement = connection.createStatement()) {
             final var sql = "SELECT * FROM COMPANY WHERE id=" + id;
+
             var resultSet = statement.executeQuery(sql);
             if (resultSet.next()) {
                 var company = new Company();
