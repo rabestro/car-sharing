@@ -101,14 +101,13 @@ public class CompanyDaoImpl implements CompanyDao {
     public List<Car> getCarsByCompany(Company company) {
         try (var connection = DriverManager.getConnection(connectionName);
              var statement = connection.createStatement()) {
-            var sql = "SELECT * FROM CAR WHERE company_id=" + company.getId();
+            var sql = "SELECT id, name FROM CAR WHERE company_id=" + company.getId();
             var resultSet = statement.executeQuery(sql);
             var cars = new ArrayList<Car>();
             if (resultSet.next()) {
                 var car = new Car();
                 car.setId(resultSet.getInt("ID"));
                 car.setName(resultSet.getString("NAME"));
-                car.setCompanyId(resultSet.getInt("COMPANY_ID"));
                 cars.add(car);
                 LOGGER.log(INFO, "- car {0}", car);
             }
