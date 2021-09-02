@@ -4,6 +4,7 @@ import carsharing.model.Car;
 import carsharing.model.Company;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface CompanyDao {
@@ -19,5 +20,5 @@ public interface CompanyDao {
 
     Optional<Company> getCompany(int id);
 
-    Collection<Car> getCarsByCompany(Company company);
+    List<Car> getCarsByCompany(Company company);
 }

@@ -37,5 +37,4 @@ public class Application implements TextInterface, Runnable {
         dao.addCompany(name);
     }
 
-
 }

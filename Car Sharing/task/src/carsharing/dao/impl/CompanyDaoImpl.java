@@ -6,11 +6,9 @@ import carsharing.model.Company;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 
+import static java.lang.System.Logger.Level.INFO;
 import static java.lang.System.Logger.Level.TRACE;
 
 public class CompanyDaoImpl implements CompanyDao {
@@ -54,6 +52,7 @@ public class CompanyDaoImpl implements CompanyDao {
             connection.setAutoCommit(true);
             statement.execute(SQL_CREATE_COMPANY_TABLE);
             statement.execute(SQL_CREATE_CAR_TABLE);
+            statement.execute("ALTER TABLE company ALTER COLUMN id RESTART WITH 1");
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -99,7 +98,7 @@ public class CompanyDaoImpl implements CompanyDao {
     }
 
     @Override
-    public Collection<Car> getCarsByCompany(Company company) {
+    public List<Car> getCarsByCompany(Company company) {
         try (var connection = DriverManager.getConnection(connectionName);
              var statement = connection.createStatement()) {
             var sql = "SELECT * FROM CAR WHERE company_id=" + company.getId();
@@ -109,13 +108,15 @@ public class CompanyDaoImpl implements CompanyDao {
                 var car = new Car();
                 car.setId(resultSet.getInt("ID"));
                 car.setName(resultSet.getString("NAME"));
+                car.setCompanyId(resultSet.getInt("COMPANY_ID"));
                 cars.add(car);
+                LOGGER.log(INFO, "- car {0}", car);
             }
             return cars;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return Collections.emptySet();
+        return Collections.emptyList();
     }
 
     @Override
@@ -125,6 +126,7 @@ public class CompanyDaoImpl implements CompanyDao {
             connection.setAutoCommit(true);
             final var sql = "INSERT INTO COMPANY (name) VALUES ('" + name + "')";
             statement.executeUpdate(sql);
+            connection.commit();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -135,8 +137,11 @@ public class CompanyDaoImpl implements CompanyDao {
         try (var connection = DriverManager.getConnection(connectionName);
              var statement = connection.createStatement()) {
             connection.setAutoCommit(true);
-            final var sql = "INSERT INTO CAR (name, company_id) VALUES ('" + name + "', " + company.getId() + ")";
+            final var sql = "INSERT INTO CAR (name, company_id) VALUES ('"
+                    + name + "', " + company.getId() + ")";
+            LOGGER.log(INFO, sql);
             statement.executeUpdate(sql);
+            connection.commit();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -147,7 +152,7 @@ public class CompanyDaoImpl implements CompanyDao {
         LOGGER.log(TRACE, "searching company id={0}", id);
         try (var connection = DriverManager.getConnection(connectionName);
              var statement = connection.createStatement()) {
-            final var sql = "SELECT * FROM COMPANY WHERE id=" + id;
+            final var sql = "SELECT id, name FROM COMPANY WHERE id=" + id;
 
             var resultSet = statement.executeQuery(sql);
             if (resultSet.next()) {

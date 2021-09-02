@@ -5,8 +5,6 @@ import carsharing.model.Company;
 import carsharing.ui.Menu;
 import carsharing.ui.TextInterface;
 
-import static java.lang.System.Logger.Level.INFO;
-
 public class CompanyList implements TextInterface, Runnable {
     private final CompanyDao dao;
 
@@ -20,12 +18,10 @@ public class CompanyList implements TextInterface, Runnable {
         if (companies.isEmpty()) {
             println("The company list is empty!");
         } else {
-            println("Choose a company:");
-            companies.forEach(c -> println("{0}. {1}", c.getId(), c.getName()));
-            var id = Integer.parseInt(scanner.nextLine());
-            LOGGER.log(INFO, "selected company {0}", id);
-            dao.getCompany(id)
-                    .ifPresentOrElse(this::company, () -> println("Company not found"));
+            final var menu = Menu.create("Choose a company:");
+
+            companies.forEach(c -> menu.add(String.valueOf(c.getId()), c.getName(), () -> company(c)));
+            menu.set(Menu.Property.EXIT, "Back").addExit().run();
         }
     }
 
@@ -37,6 +33,7 @@ public class CompanyList implements TextInterface, Runnable {
                 .addExit()
                 .run();
     }
+
     private void createCar(Company company) {
         println("Enter the car name:");
         final var name = scanner.nextLine();
@@ -45,7 +42,11 @@ public class CompanyList implements TextInterface, Runnable {
 
     private void carList(Company company) {
         println("''{0}' cars:", company.getName());
-        var cars = dao.getCarsByCompany(company);
+        final var cars = dao.getCarsByCompany(company);
+        if (cars.isEmpty()) {
+            println("The car list is empty!");
+            return;
+        }
         cars.forEach(car -> println("{0}. {1}", car.getId(), car.getName()));
     }
 }
