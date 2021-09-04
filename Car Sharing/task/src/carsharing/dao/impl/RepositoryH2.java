@@ -80,6 +80,7 @@ public class RepositoryH2 implements Repository {
             for (int i = 0; i < args.length; ++i) {
                 statement.setObject(i + 1, args[i]);
             }
+            LOGGER.log(TRACE, statement::toString);
             var result = statement.executeUpdate();
             LOGGER.log(TRACE, "Processed {0} records.", result);
             connection.commit();

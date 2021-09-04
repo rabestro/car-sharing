@@ -1,16 +1,19 @@
 package carsharing.dao.impl;
 
+import carsharing.dao.CustomerDao;
 import carsharing.dao.Repository;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class CustomerDaoImpl {
+public class CustomerDaoImpl implements CustomerDao {
     private static final System.Logger LOGGER = System.getLogger("");
 
-    private static final String SQL_COMPANIES = "SELECT * FROM company";
-    private static final String SQL_INSERT_COMPANY = "INSERT INTO COMPANY (name) VALUES (?)";
+    private static final String SQL_INSERT_CUSTOMER = "INSERT INTO customer (name) VALUES (?)";
 
     private final Repository repository;
 
-
+    @Override
+    public void addCustomer(String name) {
+        repository.insert(SQL_INSERT_CUSTOMER, name);
+    }
 }

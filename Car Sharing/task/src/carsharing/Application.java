@@ -3,25 +3,29 @@ package carsharing;
 import carsharing.component.CompanyList;
 import carsharing.dao.CarDao;
 import carsharing.dao.CompanyDao;
+import carsharing.dao.CustomerDao;
 import carsharing.dao.Repository;
 import carsharing.dao.impl.CarDaoImpl;
 import carsharing.dao.impl.CompanyDaoImpl;
+import carsharing.dao.impl.CustomerDaoImpl;
 import carsharing.ui.Menu;
 import carsharing.ui.TextInterface;
 
 public class Application implements TextInterface, Runnable {
-    private final CompanyDao dao;
+    private final CompanyDao companyDao;
     private final CarDao carDao;
+    private final CustomerDao customerDao;
 
     public Application(Repository repository) {
-        this.dao = new CompanyDaoImpl(repository);
-        this.carDao = new CarDaoImpl(repository);
+        carDao = new CarDaoImpl(repository);
+        companyDao = new CompanyDaoImpl(repository);
+        customerDao = new CustomerDaoImpl(repository);
     }
 
     @Override
     public void run() {
         final var subMenu = Menu.create()
-                .add("Company list", new CompanyList(dao, carDao))
+                .add("Company list", new CompanyList(companyDao, carDao))
                 .add("Create a company", this::createCompany)
                 .set(Menu.Property.EXIT, "Back")
                 .addExit();
@@ -36,13 +40,15 @@ public class Application implements TextInterface, Runnable {
     }
 
     private void createCustomer() {
-
+        println("Enter the customer name:");
+        customerDao.addCustomer(scanner.nextLine());
+        println("The customer was added!");
     }
 
     private void createCompany() {
         println("Enter the company name:");
         final var name = scanner.nextLine();
-        dao.addCompany(name);
+        companyDao.addCompany(name);
     }
 
 }
