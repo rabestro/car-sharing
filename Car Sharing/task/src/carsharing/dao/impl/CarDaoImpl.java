@@ -7,10 +7,7 @@ import carsharing.model.Company;
 import lombok.AllArgsConstructor;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static java.lang.System.Logger.Level.TRACE;
 
@@ -69,6 +66,11 @@ public class CarDaoImpl implements CarDao {
     @Override
     public void addCar(String name, Company company) {
         repository.insert(SQL_INSERT_CAR, name, company.getId());
+    }
+
+    @Override
+    public Optional<Car> getCar(int id) {
+        return Optional.empty();
     }
 
 }

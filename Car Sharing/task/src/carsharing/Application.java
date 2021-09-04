@@ -1,7 +1,7 @@
 package carsharing;
 
 import carsharing.component.CompanyList;
-import carsharing.component.CustomerMenu;
+import carsharing.component.CustomerList;
 import carsharing.dao.CarDao;
 import carsharing.dao.CompanyDao;
 import carsharing.dao.CustomerDao;
@@ -33,7 +33,7 @@ public class Application implements TextInterface, Runnable {
 
         final var menu = Menu.create()
                 .add("Log in as a manager", subMenu)
-                .add("Log in as a customer", new CustomerMenu(customerDao))
+                .add("Log in as a customer", new CustomerList(customerDao, carDao, companyDao))
                 .add("Create a customer", this::createCustomer)
                 .addExit();
 
