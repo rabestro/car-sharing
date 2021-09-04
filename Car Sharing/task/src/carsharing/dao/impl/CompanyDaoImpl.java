@@ -3,6 +3,7 @@ package carsharing.dao.impl;
 import carsharing.dao.CompanyDao;
 import carsharing.dao.Repository;
 import carsharing.model.Company;
+import lombok.AllArgsConstructor;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,17 +13,14 @@ import java.util.Optional;
 
 import static java.lang.System.Logger.Level.TRACE;
 
+@AllArgsConstructor
 public class CompanyDaoImpl implements CompanyDao {
-    System.Logger LOGGER = System.getLogger("");
+    private static final System.Logger LOGGER = System.getLogger("");
 
     private static final String SQL_COMPANIES = "SELECT * FROM company";
     private static final String SQL_INSERT_COMPANY = "INSERT INTO COMPANY (name) VALUES (?)";
 
     private final Repository repository;
-
-    public CompanyDaoImpl(Repository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public Collection<Company> getAllCompanies() {

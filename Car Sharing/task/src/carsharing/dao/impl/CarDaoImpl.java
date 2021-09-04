@@ -4,6 +4,7 @@ import carsharing.dao.CarDao;
 import carsharing.dao.Repository;
 import carsharing.model.Car;
 import carsharing.model.Company;
+import lombok.AllArgsConstructor;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,19 +12,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static java.lang.System.Logger.Level.INFO;
 import static java.lang.System.Logger.Level.TRACE;
 
+@AllArgsConstructor
 public class CarDaoImpl implements CarDao {
-    System.Logger LOGGER = System.getLogger("");
+    private static final System.Logger LOGGER = System.getLogger("");
     private static final String SQL_CARS = "SELECT * FROM car";
     private static final String SQL_INSERT_CAR = "INSERT INTO CAR (name, company_id) VALUES (?, ?)";
 
     private final Repository repository;
-
-    public CarDaoImpl(Repository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public List<Car> getCarsByCompany(Company company) {
