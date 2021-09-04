@@ -32,6 +32,10 @@ public class CustomerMenu implements TextInterface, Runnable {
             return;
         }
         var companies = companyDao.getAllCompanies();
+        if (companies.isEmpty()) {
+            println("The company list is empty!");
+            return;
+        }
 
     }
 
