@@ -1,5 +1,6 @@
 package carsharing.component;
 
+import carsharing.dao.CarDao;
 import carsharing.dao.CompanyDao;
 import carsharing.model.Company;
 import carsharing.ui.Menu;
@@ -7,9 +8,11 @@ import carsharing.ui.TextInterface;
 
 public class CompanyList implements TextInterface, Runnable {
     private final CompanyDao dao;
+    private final CarDao carDao;
 
-    public CompanyList(CompanyDao dao) {
+    public CompanyList(CompanyDao dao, CarDao carDao) {
         this.dao = dao;
+        this.carDao = carDao;
     }
 
     @Override
@@ -37,12 +40,12 @@ public class CompanyList implements TextInterface, Runnable {
     private void createCar(Company company) {
         println("Enter the car name:");
         final var name = scanner.nextLine();
-        dao.addCar(name, company);
+        carDao.addCar(name, company);
     }
 
     private void carList(Company company) {
         println("''{0}' cars:", company.getName());
-        final var cars = dao.getCarsByCompany(company);
+        final var cars = carDao.getCarsByCompany(company);
         if (cars.isEmpty()) {
             println("The car list is empty!");
             return;
