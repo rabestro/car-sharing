@@ -1,27 +1,22 @@
 package carsharing;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import carsharing.dao.impl.CarDaoImpl;
+import carsharing.dao.impl.CompanyDaoImpl;
+import carsharing.dao.impl.RepositoryH2;
 
 public class Main {
 
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        // write your code here
-        final var database = args.length == 2 ? args[1] : "carsharing";
+    public static void main(String[] args) throws ClassNotFoundException {
+        var repository = (args.length == 2 && "-databaseFileName".equals(args[0]))
+                ? new RepositoryH2(args[1])
+                : new RepositoryH2();
 
-        Class.forName("org.h2.Driver");
-        final var fileName = "../task/src/carsharing/db/" + database;
+        repository.createTables();
 
-        try (var connection = DriverManager.getConnection("jdbc:h2:" + fileName);
-             var st = connection.createStatement()) {
-            connection.setAutoCommit(true);
-            st.execute("DROP TABLE IF EXISTS COMPANY");
-
-            final var sql = "CREATE TABLE COMPANY ("
-                    + "ID INT PRIMARY KEY AUTO_INCREMENT, NAME VARCHAR(80) NOT NULL, UNIQUE(NAME))";
-            st.executeUpdate(sql);
-
-        }
-
+        new Application(
+                new CompanyDaoImpl(repository),
+                new CarDaoImpl(repository)
+        ).run();
     }
+
 }
