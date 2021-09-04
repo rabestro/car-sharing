@@ -16,14 +16,17 @@ import static java.lang.System.Logger.Level.ERROR;
 @AllArgsConstructor
 public class CarDaoImpl implements CarDao {
     private static final System.Logger LOGGER = System.getLogger("");
-    private static final String SQL_ALL_CARS = "SELECT * FROM car";
     private static final String SQL_INSERT_CAR = "INSERT INTO CAR (name, company_id) VALUES (?, ?)";
     private static final String SQL_BY_COMPANY = "SELECT * FROM CAR WHERE company_id=?";
     private static final String SQL_BY_ID = "SELECT * FROM CAR WHERE id=?";
-
+    private static final String SQL_FREE = "select * from car where COMPANY_ID = ? and " +
+            "id not in (select RENTED_CAR_ID from CUSTOMER where RENTED_CAR_ID != 0)";
     private static final Function<ResultSet, Car> CAR_BUILDER = rs -> {
         try {
-            return new Car(rs.getInt("id"), rs.getString("name"));
+            return new Car(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getInt("company_id"));
         } catch (SQLException e) {
             LOGGER.log(ERROR, e::getMessage);
         }
@@ -39,12 +42,7 @@ public class CarDaoImpl implements CarDao {
 
     @Override
     public List<Car> getFreeCarsByCompany(Company company) {
-        return null;
-    }
-
-    @Override
-    public List<Car> getAllCars() {
-        return repository.select(SQL_ALL_CARS, CAR_BUILDER);
+        return repository.select(SQL_FREE, CAR_BUILDER, company.getId());
     }
 
     @Override

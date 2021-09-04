@@ -46,7 +46,7 @@ public class CustomerMenu implements Component {
     }
 
     private void rentCar(Company company) {
-        var cars = carDao.getCarsByCompany(company);
+        var cars = carDao.getFreeCarsByCompany(company);
         if (cars.isEmpty()) {
             println("No available cars in the ''{0}'' company", company.getName());
             return;

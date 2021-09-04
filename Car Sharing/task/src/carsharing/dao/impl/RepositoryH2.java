@@ -75,7 +75,7 @@ public class RepositoryH2 implements Repository {
         LOGGER.log(TRACE, sql);
         LOGGER.log(TRACE, () -> Arrays.toString(args));
         try (var connection = getConnection()) {
-            connection.setAutoCommit(true);
+//            connection.setAutoCommit(true);
             var statement = connection.prepareStatement(sql);
             for (int i = 0; i < args.length; ++i) {
                 statement.setObject(i + 1, args[i]);
