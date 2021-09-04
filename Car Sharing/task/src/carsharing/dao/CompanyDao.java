@@ -10,7 +10,5 @@ public interface CompanyDao {
 
     void addCompany(String name);
 
-    void createTable();
-
     Optional<Company> getCompany(int id);
 }

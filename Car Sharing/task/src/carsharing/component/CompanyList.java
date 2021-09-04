@@ -6,6 +6,8 @@ import carsharing.model.Company;
 import carsharing.ui.Menu;
 import carsharing.ui.TextInterface;
 
+import java.util.stream.IntStream;
+
 public class CompanyList implements TextInterface, Runnable {
     private final CompanyDao dao;
     private final CarDao carDao;
@@ -24,7 +26,7 @@ public class CompanyList implements TextInterface, Runnable {
             final var menu = Menu.create("Choose a company:");
 
             companies.forEach(c -> menu.add(String.valueOf(c.getId()), c.getName(), () -> company(c)));
-            menu.set(Menu.Property.EXIT, "Back").addExit().run();
+            menu.set(Menu.Property.EXIT, "Back").onlyOnce().addExit().run();
         }
     }
 
@@ -50,6 +52,7 @@ public class CompanyList implements TextInterface, Runnable {
             println("The car list is empty!");
             return;
         }
-        cars.forEach(car -> println("{0}. {1}", car.getId(), car.getName()));
+        IntStream.range(0, cars.size())
+                .forEach(i -> println("{0}. {1}", i + 1, cars.get(i).getName()));
     }
 }

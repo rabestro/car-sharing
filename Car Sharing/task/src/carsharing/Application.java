@@ -18,8 +18,6 @@ public class Application implements TextInterface, Runnable {
 
     @Override
     public void run() {
-        dao.createTable();
-
         final var subMenu = Menu.create()
                 .add("Company list", new CompanyList(dao, carDao))
                 .add("Create a company", this::create)

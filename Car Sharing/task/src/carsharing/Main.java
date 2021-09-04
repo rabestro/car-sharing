@@ -11,11 +11,12 @@ public class Main {
                 ? new RepositoryH2(args[1])
                 : new RepositoryH2();
 
-        var dao = (args.length == 2 && "-databaseFileName".equals(args[0]))
-                ? new CompanyDaoImpl(args[1])
-                : new CompanyDaoImpl();
+        repository.createTables();
 
-        new Application(dao, new CarDaoImpl(repository)).run();
+        new Application(
+                new CompanyDaoImpl(repository),
+                new CarDaoImpl(repository)
+        ).run();
     }
 
 }
