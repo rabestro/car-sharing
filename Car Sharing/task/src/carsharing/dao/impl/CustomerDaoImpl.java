@@ -2,7 +2,11 @@ package carsharing.dao.impl;
 
 import carsharing.dao.CustomerDao;
 import carsharing.dao.Repository;
+import carsharing.model.Customer;
 import lombok.AllArgsConstructor;
+
+import java.util.Collection;
+import java.util.Collections;
 
 @AllArgsConstructor
 public class CustomerDaoImpl implements CustomerDao {
@@ -15,5 +19,10 @@ public class CustomerDaoImpl implements CustomerDao {
     @Override
     public void addCustomer(String name) {
         repository.insert(SQL_INSERT_CUSTOMER, name);
+    }
+
+    @Override
+    public Collection<Customer> getAllCustomers() {
+        return Collections.emptyList();
     }
 }

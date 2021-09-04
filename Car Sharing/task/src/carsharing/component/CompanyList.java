@@ -22,12 +22,13 @@ public class CompanyList implements TextInterface, Runnable {
         var companies = dao.getAllCompanies();
         if (companies.isEmpty()) {
             println("The company list is empty!");
-        } else {
-            final var menu = Menu.create("Choose a company:");
-
-            companies.forEach(c -> menu.add(String.valueOf(c.getId()), c.getName(), () -> company(c)));
-            menu.set(Menu.Property.EXIT, "Back").onlyOnce().addExit().run();
+            return;
         }
+        final var menu = Menu.create("Choose a company:");
+
+        companies.forEach(c -> menu.add(String.valueOf(c.getId()), c.getName(), () -> company(c)));
+        menu.set(Menu.Property.EXIT, "Back").onlyOnce().addExit().run();
+
     }
 
     private void company(Company company) {
