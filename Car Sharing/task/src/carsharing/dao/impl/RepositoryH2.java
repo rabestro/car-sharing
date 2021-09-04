@@ -1,11 +1,17 @@
 package carsharing.dao.impl;
 
 import carsharing.dao.Repository;
+import carsharing.model.Company;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
 
 import static java.lang.System.Logger.Level.ERROR;
 import static java.lang.System.Logger.Level.TRACE;
@@ -87,5 +93,23 @@ public class RepositoryH2 implements Repository {
         } catch (SQLException e) {
             LOGGER.log(ERROR, e::getMessage);
         }
+    }
+
+    @Override
+    public <T> List<T> getAll(String sql, Function<ResultSet, T> builder) {
+        LOGGER.log(TRACE, sql);
+        try (var connection = getConnection()) {
+            var statement = connection.prepareStatement(sql);
+            var resultSet = statement.executeQuery();
+            var list = new ArrayList<T>();
+            while (resultSet.next()) {
+                var object = builder.apply(resultSet);
+                list.add(object);
+            }
+            return Collections.unmodifiableList(list);
+        } catch (SQLException e) {
+            LOGGER.log(ERROR, e::getMessage);
+        }
+        return Collections.emptyList();
     }
 }

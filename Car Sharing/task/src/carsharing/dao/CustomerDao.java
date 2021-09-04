@@ -2,10 +2,10 @@ package carsharing.dao;
 
 import carsharing.model.Customer;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface CustomerDao {
     void addCustomer(String name);
 
-    Collection<Customer> getAllCustomers();
+    List<Customer> getAllCustomers();
 }
