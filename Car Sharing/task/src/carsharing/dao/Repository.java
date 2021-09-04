@@ -5,4 +5,6 @@ import java.sql.SQLException;
 
 public interface Repository {
     Connection getConnection() throws SQLException;
+
+    void insert(String sql, Object... args);
 }

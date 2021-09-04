@@ -16,6 +16,7 @@ public class CompanyDaoImpl implements CompanyDao {
     System.Logger LOGGER = System.getLogger("");
 
     private static final String SQL_COMPANIES = "SELECT * FROM company";
+    private static final String SQL_INSERT_COMPANY = "INSERT INTO COMPANY (name) VALUES (?)";
 
     private final Repository repository;
 
@@ -25,36 +26,27 @@ public class CompanyDaoImpl implements CompanyDao {
 
     @Override
     public Collection<Company> getAllCompanies() {
-        try (var connection = repository.getConnection();
-             var statement = connection.createStatement();
-             var resultSet = statement.executeQuery(SQL_COMPANIES)) {
+        try (var connection = repository.getConnection()) {
+            var statement = connection.prepareStatement(SQL_COMPANIES);
+            var resultSet = statement.executeQuery();
             var companies = new ArrayList<Company>();
             while (resultSet.next()) {
                 var company = new Company(
-                        resultSet.getInt("ID"),
-                        resultSet.getString("NAME")
+                        resultSet.getInt(Company.ID),
+                        resultSet.getString(Company.NAME)
                 );
                 companies.add(company);
             }
             return Collections.unmodifiableCollection(companies);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return Collections.emptySet();
     }
 
     @Override
     public void addCompany(String name) {
-        try (var connection = repository.getConnection();
-             var statement = connection.createStatement()) {
-            connection.setAutoCommit(true);
-            final var sql = "INSERT INTO COMPANY (name) VALUES ('" + name + "')";
-            LOGGER.log(TRACE, sql);
-            statement.executeUpdate(sql);
-            connection.commit();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        repository.insert(SQL_INSERT_COMPANY, name);
     }
 
     @Override
@@ -67,8 +59,8 @@ public class CompanyDaoImpl implements CompanyDao {
             var resultSet = statement.executeQuery(sql);
             if (resultSet.next()) {
                 var company = new Company(
-                        resultSet.getInt("ID"),
-                        resultSet.getString("NAME")
+                        resultSet.getInt(Company.ID),
+                        resultSet.getString(Company.NAME)
                 );
                 return Optional.of(company);
             }

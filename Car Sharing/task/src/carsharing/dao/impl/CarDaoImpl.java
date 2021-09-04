@@ -17,6 +17,7 @@ import static java.lang.System.Logger.Level.TRACE;
 public class CarDaoImpl implements CarDao {
     System.Logger LOGGER = System.getLogger("");
     private static final String SQL_CARS = "SELECT * FROM car";
+    private static final String SQL_INSERT_CAR = "INSERT INTO CAR (name, company_id) VALUES (?, ?)";
 
     private final Repository repository;
 
@@ -70,17 +71,7 @@ public class CarDaoImpl implements CarDao {
 
     @Override
     public void addCar(String name, Company company) {
-        try (var connection = repository.getConnection();
-             var statement = connection.createStatement()) {
-            connection.setAutoCommit(true);
-            final var sql = "INSERT INTO CAR (name, company_id) VALUES ('"
-                    + name + "', " + company.getId() + ")";
-            LOGGER.log(INFO, sql);
-            statement.executeUpdate(sql);
-            connection.commit();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        repository.insert(SQL_INSERT_CAR, name, company.getId());
     }
 
 }

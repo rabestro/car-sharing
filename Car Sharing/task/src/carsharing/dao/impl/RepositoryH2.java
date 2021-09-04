@@ -5,8 +5,14 @@ import carsharing.dao.Repository;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Arrays;
+
+import static java.lang.System.Logger.Level.ERROR;
+import static java.lang.System.Logger.Level.TRACE;
 
 public class RepositoryH2 implements Repository {
+    System.Logger LOGGER = System.getLogger("");
+
     private static final String DEFAULT_DB_NAME = "car_sharing";
     private static final String DRIVER = "org.h2.Driver";
     private static final String PATH = "jdbc:h2:./src/carsharing/db/";
@@ -61,6 +67,24 @@ public class RepositoryH2 implements Repository {
 
         } catch (SQLException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void insert(String sql, Object... args) {
+        LOGGER.log(TRACE, sql);
+        LOGGER.log(TRACE, () -> Arrays.toString(args));
+        try (var connection = getConnection()) {
+            connection.setAutoCommit(true);
+            var statement = connection.prepareStatement(sql);
+            for (int i = 0; i < args.length; ++i) {
+                statement.setObject(i + 1, args[i]);
+            }
+            var result = statement.executeUpdate();
+            LOGGER.log(TRACE, "Processed {0} records.", result);
+            connection.commit();
+        } catch (SQLException e) {
+            LOGGER.log(ERROR, e::getMessage);
         }
     }
 }
