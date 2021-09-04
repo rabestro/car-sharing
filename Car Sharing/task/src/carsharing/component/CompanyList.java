@@ -3,9 +3,8 @@ package carsharing.component;
 import carsharing.dao.CarDao;
 import carsharing.dao.CompanyDao;
 import carsharing.ui.Menu;
-import carsharing.ui.TextInterface;
 
-public class CompanyList implements TextInterface, Runnable {
+public class CompanyList implements Component {
     private final CompanyDao dao;
     private final CarDao carDao;
 

@@ -3,13 +3,12 @@ package carsharing.component;
 import carsharing.dao.CarDao;
 import carsharing.model.Company;
 import carsharing.ui.Menu;
-import carsharing.ui.TextInterface;
 import lombok.AllArgsConstructor;
 
 import java.util.stream.IntStream;
 
 @AllArgsConstructor
-public class CompanyMenu implements TextInterface, Runnable {
+public class CompanyMenu implements Component {
     private final Company company;
     private final CarDao carDao;
 

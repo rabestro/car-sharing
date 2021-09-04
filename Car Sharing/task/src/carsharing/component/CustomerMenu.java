@@ -3,13 +3,13 @@ package carsharing.component;
 import carsharing.dao.CarDao;
 import carsharing.dao.CompanyDao;
 import carsharing.model.Car;
+import carsharing.model.Company;
 import carsharing.model.Customer;
 import carsharing.ui.Menu;
-import carsharing.ui.TextInterface;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class CustomerMenu implements TextInterface, Runnable {
+public class CustomerMenu implements Component {
     private final Customer customer;
     private final CarDao carDao;
     private final CompanyDao companyDao;
@@ -36,7 +36,23 @@ public class CustomerMenu implements TextInterface, Runnable {
             println("The company list is empty!");
             return;
         }
+        var menu = Menu.create("Choose a company:");
+        companies.forEach(company -> menu.add(company.getName(), () -> getCar(company)));
+        menu.set(Menu.Property.EXIT, "Back").onlyOnce().addExit().run();
+    }
 
+    private void getCar(Company company) {
+        var cars = carDao.getCarsByCompany(company);
+        if (cars.isEmpty()) {
+            println("No available cars in the ''{0}' company", company.getName());
+            return;
+        }
+        var menu = Menu.create("Choose a car:");
+        cars.forEach(car -> menu.add(car.getName(), () -> {
+            println("You rented ''{0}'", car.getName());
+            customer.setCarId(car.getId());
+        }));
+        menu.set(Menu.Property.EXIT, "Back").onlyOnce().addExit().run();
     }
 
     private void returnCar() {

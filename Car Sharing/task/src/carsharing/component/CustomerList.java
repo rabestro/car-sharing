@@ -4,11 +4,10 @@ import carsharing.dao.CarDao;
 import carsharing.dao.CompanyDao;
 import carsharing.dao.CustomerDao;
 import carsharing.ui.Menu;
-import carsharing.ui.TextInterface;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class CustomerList implements TextInterface, Runnable {
+public class CustomerList implements Component {
     private final CustomerDao customerDao;
     private final CarDao carDao;
     private final CompanyDao companyDao;
