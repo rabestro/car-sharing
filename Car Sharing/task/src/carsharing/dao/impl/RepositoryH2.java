@@ -62,8 +62,8 @@ public class RepositoryH2 implements Repository {
             statement.execute(SQL_CREATE_COMPANY_TABLE);
             statement.execute(SQL_CREATE_CAR_TABLE);
             statement.execute(SQL_CREATE_CUSTOMER_TABLE);
-            statement.execute("ALTER TABLE company ALTER COLUMN id RESTART WITH 1");
-            statement.execute("ALTER TABLE car ALTER COLUMN id RESTART WITH 1");
+//            statement.execute("ALTER TABLE company ALTER COLUMN id RESTART WITH 1");
+//            statement.execute("ALTER TABLE car ALTER COLUMN id RESTART WITH 1");
 
         } catch (SQLException ex) {
             ex.printStackTrace();
