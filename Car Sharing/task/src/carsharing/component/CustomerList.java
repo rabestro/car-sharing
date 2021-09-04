@@ -21,8 +21,8 @@ public class CustomerList implements Component {
         }
         var menu = Menu.create("Choose a customer:");
         customers.forEach(customer ->
-                menu.add(customer.getName(), () -> new CustomerMenu(customer, carDao, companyDao)));
-        menu.set(Menu.Property.EXIT, "Back").onlyOnce().addExit().run();
+                menu.add(customer.getName(), () -> new CustomerMenu(customer, carDao, companyDao).run()));
+        menu.set(Menu.Property.EXIT, "Back").addExit().run();
     }
 
 }

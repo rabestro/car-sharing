@@ -21,7 +21,7 @@ public class CompanyList implements Component {
             return;
         }
         var menu = Menu.create("Choose a company:");
-        companies.forEach(company -> menu.add(company.getName(), () -> new CompanyMenu(company, carDao)));
+        companies.forEach(company -> menu.add(company.getName(), () -> new CompanyMenu(company, carDao).run()));
         menu.set(Menu.Property.EXIT, "Back").onlyOnce().addExit().run();
     }
 
