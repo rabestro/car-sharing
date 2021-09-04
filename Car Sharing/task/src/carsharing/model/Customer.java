@@ -3,9 +3,9 @@ package carsharing.model;
 import lombok.Data;
 
 @Data
-public class Company {
-    public static final Company EMPTY = new Company(0, "");
-
+public class Customer {
+    public static final Customer EMPTY = new Customer(0, "");
     private final int id;
     private final String name;
+    private Integer carId;
 }

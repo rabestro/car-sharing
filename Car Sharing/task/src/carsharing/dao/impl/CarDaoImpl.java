@@ -4,81 +4,56 @@ import carsharing.dao.CarDao;
 import carsharing.dao.Repository;
 import carsharing.model.Car;
 import carsharing.model.Company;
+import lombok.AllArgsConstructor;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
-import static java.lang.System.Logger.Level.INFO;
-import static java.lang.System.Logger.Level.TRACE;
+import static java.lang.System.Logger.Level.ERROR;
 
+@AllArgsConstructor
 public class CarDaoImpl implements CarDao {
-    System.Logger LOGGER = System.getLogger("");
-    private static final String SQL_CARS = "SELECT * FROM car";
+    private static final System.Logger LOGGER = System.getLogger("");
+    private static final String SQL_INSERT_CAR = "INSERT INTO CAR (name, company_id) VALUES (?, ?)";
+    private static final String SQL_BY_COMPANY = "SELECT * FROM CAR WHERE company_id=?";
+    private static final String SQL_BY_ID = "SELECT * FROM CAR WHERE id=?";
+    private static final String SQL_FREE = "select * from car where COMPANY_ID = ? and " +
+            "id not in (select RENTED_CAR_ID from CUSTOMER where RENTED_CAR_ID != 0)";
+    private static final Function<ResultSet, Car> CAR_BUILDER = rs -> {
+        try {
+            return new Car(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getInt("company_id"));
+        } catch (SQLException e) {
+            LOGGER.log(ERROR, e::getMessage);
+        }
+        return Car.EMPTY;
+    };
 
     private final Repository repository;
 
-    public CarDaoImpl(Repository repository) {
-        this.repository = repository;
-    }
-
     @Override
     public List<Car> getCarsByCompany(Company company) {
-        try (var connection = repository.getConnection();
-             var statement = connection.createStatement()) {
-            var sql = "SELECT id, name FROM CAR WHERE company_id=" + company.getId();
-            LOGGER.log(TRACE, sql);
-            var resultSet = statement.executeQuery(sql);
-            var cars = new ArrayList<Car>();
-            while (resultSet.next()) {
-                var car = new Car();
-                car.setId(resultSet.getInt("ID"));
-                car.setName(resultSet.getString("NAME"));
-                cars.add(car);
-                LOGGER.log(TRACE, "- car {0}", car.getName());
-            }
-            return cars;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return Collections.emptyList();
+        return repository.select(SQL_BY_COMPANY, CAR_BUILDER, company.getId());
     }
 
-
     @Override
-    public Collection<Car> getAllCars() {
-        try (var connection = repository.getConnection();
-             var statement = connection.createStatement();
-             var resultSet = statement.executeQuery(SQL_CARS)) {
-            var cars = new ArrayList<Car>();
-            while (resultSet.next()) {
-                var car = new Car();
-                car.setId(resultSet.getInt("ID"));
-                car.setName(resultSet.getString("NAME"));
-                cars.add(car);
-            }
-            return Collections.unmodifiableCollection(cars);
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-        return Collections.emptySet();
+    public List<Car> getFreeCarsByCompany(Company company) {
+        return repository.select(SQL_FREE, CAR_BUILDER, company.getId());
     }
 
     @Override
     public void addCar(String name, Company company) {
-        try (var connection = repository.getConnection();
-             var statement = connection.createStatement()) {
-            connection.setAutoCommit(true);
-            final var sql = "INSERT INTO CAR (name, company_id) VALUES ('"
-                    + name + "', " + company.getId() + ")";
-            LOGGER.log(INFO, sql);
-            statement.executeUpdate(sql);
-            connection.commit();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        repository.update(SQL_INSERT_CAR, name, company.getId());
+    }
+
+    @Override
+    public Optional<Car> getCar(Integer id) {
+        return repository.select(SQL_BY_ID, CAR_BUILDER, id).stream().findFirst();
     }
 
 }

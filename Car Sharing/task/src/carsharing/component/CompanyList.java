@@ -2,13 +2,9 @@ package carsharing.component;
 
 import carsharing.dao.CarDao;
 import carsharing.dao.CompanyDao;
-import carsharing.model.Company;
 import carsharing.ui.Menu;
-import carsharing.ui.TextInterface;
 
-import java.util.stream.IntStream;
-
-public class CompanyList implements TextInterface, Runnable {
+public class CompanyList implements Component {
     private final CompanyDao dao;
     private final CarDao carDao;
 
@@ -22,37 +18,11 @@ public class CompanyList implements TextInterface, Runnable {
         var companies = dao.getAllCompanies();
         if (companies.isEmpty()) {
             println("The company list is empty!");
-        } else {
-            final var menu = Menu.create("Choose a company:");
-
-            companies.forEach(c -> menu.add(String.valueOf(c.getId()), c.getName(), () -> company(c)));
-            menu.set(Menu.Property.EXIT, "Back").onlyOnce().addExit().run();
-        }
-    }
-
-    private void company(Company company) {
-        Menu.create("'" + company.getName() + "' company:")
-                .add("Car list", () -> carList(company))
-                .add("Create a car", () -> createCar(company))
-                .set(Menu.Property.EXIT, "Back")
-                .addExit()
-                .run();
-    }
-
-    private void createCar(Company company) {
-        println("Enter the car name:");
-        final var name = scanner.nextLine();
-        carDao.addCar(name, company);
-    }
-
-    private void carList(Company company) {
-        println("''{0}' cars:", company.getName());
-        final var cars = carDao.getCarsByCompany(company);
-        if (cars.isEmpty()) {
-            println("The car list is empty!");
             return;
         }
-        IntStream.range(0, cars.size())
-                .forEach(i -> println("{0}. {1}", i + 1, cars.get(i).getName()));
+        var menu = Menu.create("Choose a company:");
+        companies.forEach(company -> menu.add(company.getName(), () -> new CompanyMenu(company, carDao).run()));
+        menu.set(Menu.Property.EXIT, "Back").onlyOnce().addExit().run();
     }
+
 }
