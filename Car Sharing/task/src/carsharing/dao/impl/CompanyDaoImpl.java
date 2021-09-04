@@ -30,9 +30,10 @@ public class CompanyDaoImpl implements CompanyDao {
              var resultSet = statement.executeQuery(SQL_COMPANIES)) {
             var companies = new ArrayList<Company>();
             while (resultSet.next()) {
-                var company = new Company();
-                company.setId(resultSet.getInt("ID"));
-                company.setName(resultSet.getString("NAME"));
+                var company = new Company(
+                        resultSet.getInt("ID"),
+                        resultSet.getString("NAME")
+                );
                 companies.add(company);
             }
             return Collections.unmodifiableCollection(companies);
@@ -41,7 +42,6 @@ public class CompanyDaoImpl implements CompanyDao {
         }
         return Collections.emptySet();
     }
-
 
     @Override
     public void addCompany(String name) {
@@ -66,13 +66,14 @@ public class CompanyDaoImpl implements CompanyDao {
 
             var resultSet = statement.executeQuery(sql);
             if (resultSet.next()) {
-                var company = new Company();
-                company.setId(resultSet.getInt("ID"));
-                company.setName(resultSet.getString("NAME"));
+                var company = new Company(
+                        resultSet.getInt("ID"),
+                        resultSet.getString("NAME")
+                );
                 return Optional.of(company);
             }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
         }
         return Optional.empty();
     }

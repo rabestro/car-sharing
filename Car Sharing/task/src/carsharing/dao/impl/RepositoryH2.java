@@ -24,6 +24,14 @@ public class RepositoryH2 implements Repository {
             " constraint CAR_COMPANY_ID_FK " +
             " foreign key (COMPANY_ID) references COMPANY (ID))";
 
+    private static final String SQL_CREATE_CUSTOMER_TABLE = "" +
+            "CREATE TABLE IF NOT EXISTS customer (" +
+            "id INT AUTO_INCREMENT PRIMARY KEY, " +
+            "name VARCHAR(255) UNIQUE NOT NULL, " +
+            "rented_car_id INT," +
+            " constraint CUSTOMER_CAR_ID_FK " +
+            " foreign key (rented_car_id) references car (id))";
+
     private final String connectionName;
 
     public RepositoryH2(String dbFilename) throws ClassNotFoundException {
@@ -47,6 +55,7 @@ public class RepositoryH2 implements Repository {
             connection.setAutoCommit(true);
             statement.execute(SQL_CREATE_COMPANY_TABLE);
             statement.execute(SQL_CREATE_CAR_TABLE);
+            statement.execute(SQL_CREATE_CUSTOMER_TABLE);
             statement.execute("ALTER TABLE company ALTER COLUMN id RESTART WITH 1");
             statement.execute("ALTER TABLE car ALTER COLUMN id RESTART WITH 1");
 
