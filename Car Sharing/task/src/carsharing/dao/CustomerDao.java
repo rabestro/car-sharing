@@ -8,4 +8,6 @@ public interface CustomerDao {
     void addCustomer(String name);
 
     List<Customer> getAllCustomers();
+
+    void update(Customer customer);
 }

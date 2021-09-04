@@ -64,8 +64,6 @@ public class RepositoryH2 implements Repository {
             statement.execute(SQL_CREATE_COMPANY_TABLE);
             statement.execute(SQL_CREATE_CAR_TABLE);
             statement.execute(SQL_CREATE_CUSTOMER_TABLE);
-//            statement.execute("ALTER TABLE company ALTER COLUMN id RESTART WITH 1");
-//            statement.execute("ALTER TABLE car ALTER COLUMN id RESTART WITH 1");
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -73,7 +71,7 @@ public class RepositoryH2 implements Repository {
     }
 
     @Override
-    public void insert(String sql, Object... args) {
+    public void update(String sql, Object... args) {
         LOGGER.log(TRACE, sql);
         LOGGER.log(TRACE, () -> Arrays.toString(args));
         try (var connection = getConnection()) {
@@ -112,11 +110,6 @@ public class RepositoryH2 implements Repository {
             LOGGER.log(ERROR, e::getMessage);
         }
         return Collections.emptyList();
-    }
-
-    @Override
-    public <T> List<T> getAll(String sql, Function<ResultSet, T> builder) {
-        return select(sql, builder);
     }
 
 }

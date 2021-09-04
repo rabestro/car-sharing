@@ -17,6 +17,7 @@ public class CustomerDaoImpl implements CustomerDao {
     private static final System.Logger LOGGER = System.getLogger("");
 
     private static final String SQL_INSERT_CUSTOMER = "INSERT INTO customer (name) VALUES (?)";
+    private static final String SQL_UPDATE_CAR = "UPDATE customer SET rented_car_id = ? WHERE id = ?";
 
     private static final Function<ResultSet, Customer> CUSTOMER_BUILDER = rs -> {
         try {
@@ -33,11 +34,16 @@ public class CustomerDaoImpl implements CustomerDao {
 
     @Override
     public void addCustomer(String name) {
-        repository.insert(SQL_INSERT_CUSTOMER, name);
+        repository.update(SQL_INSERT_CUSTOMER, name);
     }
 
     @Override
     public List<Customer> getAllCustomers() {
         return repository.select("select * from customer", CUSTOMER_BUILDER);
+    }
+
+    @Override
+    public void update(Customer customer) {
+        repository.update(SQL_UPDATE_CAR, customer.getCarId(), customer.getId());
     }
 }

@@ -39,7 +39,7 @@ public class CompanyDaoImpl implements CompanyDao {
 
     @Override
     public void addCompany(String name) {
-        repository.insert(SQL_INSERT_COMPANY, name);
+        repository.update(SQL_INSERT_COMPANY, name);
     }
 
     @Override

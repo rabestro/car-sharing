@@ -2,6 +2,7 @@ package carsharing.component;
 
 import carsharing.dao.CarDao;
 import carsharing.dao.CompanyDao;
+import carsharing.dao.CustomerDao;
 import carsharing.model.Car;
 import carsharing.model.Company;
 import carsharing.model.Customer;
@@ -15,6 +16,7 @@ public class CustomerMenu implements Component {
     private final Customer customer;
     private final CarDao carDao;
     private final CompanyDao companyDao;
+    private final CustomerDao customerDao;
 
     @Override
     public void run() {
@@ -53,6 +55,7 @@ public class CustomerMenu implements Component {
         cars.forEach(car -> menu.add(car.getName(), () -> {
             println("You rented ''{0}''", car.getName());
             customer.setCarId(car.getId());
+            customerDao.update(customer);
         }));
         menu.set(Menu.Property.EXIT, "Back").onlyOnce().addExit().run();
     }
@@ -61,6 +64,7 @@ public class CustomerMenu implements Component {
         carDao.getCar(customer.getCarId())
                 .ifPresentOrElse(car -> {
                     customer.setCarId(0);
+                    customerDao.update(customer);
                     println("You''ve returned a rented car!");
                 }, this::noCarError);
     }

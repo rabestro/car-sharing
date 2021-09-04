@@ -38,13 +38,18 @@ public class CarDaoImpl implements CarDao {
     }
 
     @Override
+    public List<Car> getFreeCarsByCompany(Company company) {
+        return null;
+    }
+
+    @Override
     public List<Car> getAllCars() {
         return repository.select(SQL_ALL_CARS, CAR_BUILDER);
     }
 
     @Override
     public void addCar(String name, Company company) {
-        repository.insert(SQL_INSERT_CAR, name, company.getId());
+        repository.update(SQL_INSERT_CAR, name, company.getId());
     }
 
     @Override
