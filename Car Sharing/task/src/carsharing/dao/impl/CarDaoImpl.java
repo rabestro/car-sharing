@@ -33,15 +33,16 @@ public class CarDaoImpl implements CarDao {
             var resultSet = statement.executeQuery(sql);
             var cars = new ArrayList<Car>();
             while (resultSet.next()) {
-                var car = new Car();
-                car.setId(resultSet.getInt("ID"));
-                car.setName(resultSet.getString("NAME"));
+                var car = new Car(
+                        resultSet.getInt("ID"),
+                        resultSet.getString("NAME")
+                );
                 cars.add(car);
                 LOGGER.log(TRACE, "- car {0}", car.getName());
             }
             return cars;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return Collections.emptyList();
     }
@@ -54,9 +55,10 @@ public class CarDaoImpl implements CarDao {
              var resultSet = statement.executeQuery(SQL_CARS)) {
             var cars = new ArrayList<Car>();
             while (resultSet.next()) {
-                var car = new Car();
-                car.setId(resultSet.getInt("ID"));
-                car.setName(resultSet.getString("NAME"));
+                var car = new Car(
+                        resultSet.getInt("ID"),
+                        resultSet.getString("NAME")
+                );
                 cars.add(car);
             }
             return Collections.unmodifiableCollection(cars);
@@ -76,8 +78,8 @@ public class CarDaoImpl implements CarDao {
             LOGGER.log(INFO, sql);
             statement.executeUpdate(sql);
             connection.commit();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
