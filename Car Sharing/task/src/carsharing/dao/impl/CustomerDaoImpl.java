@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.function.Function;
 
+import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.ERROR;
 
 @AllArgsConstructor
@@ -44,6 +45,7 @@ public class CustomerDaoImpl implements CustomerDao {
 
     @Override
     public void update(Customer customer) {
+        LOGGER.log(DEBUG, customer);
         repository.update(SQL_UPDATE_CAR, customer.getCarId(), customer.getId());
     }
 }

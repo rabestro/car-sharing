@@ -63,7 +63,7 @@ public class CustomerMenu implements Component {
     private void returnCar() {
         carDao.getCar(customer.getCarId())
                 .ifPresentOrElse(car -> {
-                    customer.setCarId(0);
+                    customer.setCarId(null);
                     customerDao.update(customer);
                     println("You''ve returned a rented car!");
                 }, this::noCarError);

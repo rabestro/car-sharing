@@ -8,7 +8,8 @@ import lombok.AllArgsConstructor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static java.lang.System.Logger.Level.ERROR;
@@ -51,7 +52,7 @@ public class CarDaoImpl implements CarDao {
     }
 
     @Override
-    public Optional<Car> getCar(int id) {
+    public Optional<Car> getCar(Integer id) {
         return repository.select(SQL_BY_ID, CAR_BUILDER, id).stream().findFirst();
     }
 

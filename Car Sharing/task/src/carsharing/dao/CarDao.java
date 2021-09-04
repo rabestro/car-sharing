@@ -13,5 +13,5 @@ public interface CarDao {
 
     void addCar(String name, Company company);
 
-    Optional<Car> getCar(int id);
+    Optional<Car> getCar(Integer id);
 }
