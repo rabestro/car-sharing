@@ -3,15 +3,12 @@ package carsharing.component;
 import carsharing.dao.CarDao;
 import carsharing.dao.CompanyDao;
 import carsharing.ui.Menu;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public class CompanyList implements Component {
     private final CompanyDao dao;
     private final CarDao carDao;
-
-    public CompanyList(CompanyDao dao, CarDao carDao) {
-        this.dao = dao;
-        this.carDao = carDao;
-    }
 
     @Override
     public void run() {
