@@ -17,10 +17,11 @@ public class CustomerDaoImpl implements CustomerDao {
     private static final System.Logger LOGGER = System.getLogger("");
 
     private static final String SQL_INSERT_CUSTOMER = "INSERT INTO customer (name) VALUES (?)";
+
     private static final Function<ResultSet, Customer> CUSTOMER_BUILDER = rs -> {
         try {
-            var customer = new Customer(rs.getInt(1), rs.getString(2));
-            customer.setCarId(rs.getInt(3));
+            var customer = new Customer(rs.getInt("id"), rs.getString("name"));
+            customer.setCarId(rs.getInt("rented_car_id"));
             return customer;
         } catch (SQLException e) {
             LOGGER.log(ERROR, e::getMessage);
@@ -37,8 +38,6 @@ public class CustomerDaoImpl implements CustomerDao {
 
     @Override
     public List<Customer> getAllCustomers() {
-        return repository.getAll(
-                "select id, name, rented_car_id from customer",
-                CUSTOMER_BUILDER);
+        return repository.select("select * from customer", CUSTOMER_BUILDER);
     }
 }

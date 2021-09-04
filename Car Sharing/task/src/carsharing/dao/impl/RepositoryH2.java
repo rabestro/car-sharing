@@ -1,16 +1,12 @@
 package carsharing.dao.impl;
 
 import carsharing.dao.Repository;
-import carsharing.model.Company;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 import static java.lang.System.Logger.Level.ERROR;
@@ -96,10 +92,15 @@ public class RepositoryH2 implements Repository {
     }
 
     @Override
-    public <T> List<T> getAll(String sql, Function<ResultSet, T> builder) {
+    public <T> List<T> select(String sql, Function<ResultSet, T> builder, Object... args) {
         LOGGER.log(TRACE, sql);
+        LOGGER.log(TRACE, () -> Arrays.toString(args));
         try (var connection = getConnection()) {
             var statement = connection.prepareStatement(sql);
+            for (int i = 0; i < args.length; ++i) {
+                statement.setObject(i + 1, args[i]);
+            }
+            LOGGER.log(TRACE, statement::toString);
             var resultSet = statement.executeQuery();
             var list = new ArrayList<T>();
             while (resultSet.next()) {
@@ -112,4 +113,10 @@ public class RepositoryH2 implements Repository {
         }
         return Collections.emptyList();
     }
+
+    @Override
+    public <T> List<T> getAll(String sql, Function<ResultSet, T> builder) {
+        return select(sql, builder);
+    }
+
 }

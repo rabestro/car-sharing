@@ -5,41 +5,36 @@ import carsharing.dao.Repository;
 import carsharing.model.Company;
 import lombok.AllArgsConstructor;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
-import static java.lang.System.Logger.Level.TRACE;
+import static java.lang.System.Logger.Level.ERROR;
 
 @AllArgsConstructor
 public class CompanyDaoImpl implements CompanyDao {
     private static final System.Logger LOGGER = System.getLogger("");
 
     private static final String SQL_COMPANIES = "SELECT * FROM company";
+    private static final String SQL_COMPANY = "SELECT id, name FROM COMPANY WHERE id=?";
     private static final String SQL_INSERT_COMPANY = "INSERT INTO COMPANY (name) VALUES (?)";
+
+    private static final Function<ResultSet, Company> COMPANY_BUILDER = rs -> {
+        try {
+            return new Company(rs.getInt(1), rs.getString(2));
+        } catch (SQLException e) {
+            LOGGER.log(ERROR, e::getMessage);
+        }
+        return Company.EMPTY;
+    };
 
     private final Repository repository;
 
     @Override
-    public Collection<Company> getAllCompanies() {
-        try (var connection = repository.getConnection()) {
-            var statement = connection.prepareStatement(SQL_COMPANIES);
-            var resultSet = statement.executeQuery();
-            var companies = new ArrayList<Company>();
-            while (resultSet.next()) {
-                var company = new Company(
-                        resultSet.getInt(Company.ID),
-                        resultSet.getString(Company.NAME)
-                );
-                companies.add(company);
-            }
-            return Collections.unmodifiableCollection(companies);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return Collections.emptySet();
+    public List<Company> getAllCompanies() {
+        return repository.select(SQL_COMPANIES, COMPANY_BUILDER);
     }
 
     @Override
@@ -49,22 +44,6 @@ public class CompanyDaoImpl implements CompanyDao {
 
     @Override
     public Optional<Company> getCompany(int id) {
-        LOGGER.log(TRACE, "searching company id={0}", id);
-        try (var connection = repository.getConnection();
-             var statement = connection.createStatement()) {
-            final var sql = "SELECT id, name FROM COMPANY WHERE id=" + id;
-
-            var resultSet = statement.executeQuery(sql);
-            if (resultSet.next()) {
-                var company = new Company(
-                        resultSet.getInt(Company.ID),
-                        resultSet.getString(Company.NAME)
-                );
-                return Optional.of(company);
-            }
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
-        }
-        return Optional.empty();
+        return repository.select(SQL_COMPANY, COMPANY_BUILDER, id).stream().findAny();
     }
 }
